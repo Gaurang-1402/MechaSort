@@ -15,3 +15,4 @@ arm.setPosition(1, 0, 1000, wait=True)
 arm.setPosition(1, 500, 1000, wait=True)
 arm.setPosition(1, 0, 1000, wait=True)
 arm.setPosition(1, 500, 1000, wait=True)
+
