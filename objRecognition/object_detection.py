@@ -16,19 +16,17 @@ class ObjectDetection(object):
     IOU_THRESHOLD = 0.45
     DEFAULT_INPUT_SIZE = 512 * 512
 
-    def __init__(self, labels, prob_threshold=0.10, max_detections = 20):
+    def __init__(self, labels, max_detections = 20):
         """Initialize the class
 
         Args:
             labels ([str]): list of labels for the exported model.
-            prob_threshold (float): threshold for class probability.
             max_detections (int): the max number of output results.
         """
 
         assert len(labels) >= 1, "At least 1 label is required"
 
         self.labels = labels
-        self.prob_threshold = prob_threshold
         self.max_detections = max_detections
 
     def _logistic(self, x):
@@ -52,8 +50,6 @@ class ObjectDetection(object):
         while len(selected_boxes) < max_detections:
             # Select the prediction with the highest probability.
             i = np.argmax(max_probs)
-            if max_probs[i] < self.prob_threshold:
-                break
 
             # Save the selected prediction
             selected_boxes.append(boxes[i])
@@ -179,14 +175,9 @@ class ObjectDetection(object):
         """
         boxes, class_probs = self._extract_bb(prediction_outputs, self.ANCHORS)
 
-        # Remove bounding boxes whose confidence is lower than the threshold.
-        max_probs = np.amax(class_probs, axis=1)
-        index, = np.where(max_probs > self.prob_threshold)
-        index = index[(-max_probs[index]).argsort()]
-
         # Remove overlapping bounding boxes
-        selected_boxes, selected_classes, selected_probs = self._non_maximum_suppression(boxes[index],
-                                                                                         class_probs[index],
+        selected_boxes, selected_classes, selected_probs = self._non_maximum_suppression(boxes,
+                                                                                         class_probs,
                                                                                          self.max_detections)
 
         return [{'probability': round(float(selected_probs[i]), 8),
