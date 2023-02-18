@@ -6,6 +6,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS, cross_origin
 import pandas as pd
+import time
 from predict import *
 
 app = Flask(__name__)
@@ -20,6 +21,39 @@ predict_fn = model.signatures['serving_default']
 # Initialize the video stream
 # cap = cv2.VideoCapture('http://raspberry-pi-ip-address:port')
 cap = cv2.VideoCapture(0)
+# quadrants = [{
+#     'x': 0,
+#     'y': 0,
+#     'width': 0.5,
+#     'height': 0.5,
+#     'class': "pill",
+#     "probability": 0.8
+# },
+# {
+#     'x': 0.5,
+#     'y': 0,
+#     'width': 0.5,
+#     'height': 0.5,
+#     'class': "pill",
+#     "probability": 0.8
+# },
+# {
+#     'x': 0,
+#     'y': 0.5,
+#     'width': 0.5,
+#     'height': 0.5,
+#     'class': "pill",
+#     "probability": 0.8
+# },
+# {
+#     'x': 0.5,
+#     'y': 0.5,
+#     'width': 0.5,
+#     'height': 0.5,
+#     'class': "pill",
+#     "probability": 0.8
+# }
+# ]
 
 @socketio.on_error()
 def chat_error_handler(e):
@@ -50,32 +84,30 @@ def detect_objects():
             classes = detections['tagName']
 
                 # Filter out the detections with low confidence scores
-            valid_detections = scores > 0.5
+            valid_detections = scores > 0.
 
             boxes = boxes[valid_detections]
             classes = classes[valid_detections]
+            scores = scores[valid_detections]
+
             if not boxes.empty:
                 # Convert the bounding boxes from normalized coordinates to pixel coordinates
-                print(tf.convert_to_tensor(frame).shape)
-                height, width, _ = tf.convert_to_tensor(frame).shape
-
                 boxes = np.array([list(box.values()) for box in boxes])
-                print(boxes)
                 # boxes = boxes.astype(np.int32)
 
                 # Construct the list of detected objects
                 detections = []
-                for box, class_id in zip(boxes, classes):
-                    print(box)
+                for box, class_id, prob in zip(boxes, classes, scores):
                     detection = {
-                        'x': box[1],
-                        'y': box[0],
-                        'width': box[3] - box[1],
-                        'height': box[2] - box[0],
-                        'class': class_id
+                        'x': box[0],
+                        'y': box[1],
+                        'width': box[2],
+                        'height': box[3],
+                        'class': class_id,
+                        'probability': prob
                     }
-                    print(detection)
-                    detections.append(detection)
+
+                    detections.append(detection)                
 
                 # Emit the object detection results to all connected clients over a SocketIO namespace
                 with app.test_request_context('/'):

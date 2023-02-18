@@ -19,15 +19,26 @@ function VideoStream() {
     canvas.height = canvas.offsetHeight;
 
     socket.on('detections', (detections) => {
-      context.clearRect(0, 0, 1080,1920);
+      context.clearRect(0, 0, canvas.width, canvas.height);
       // context.drawImage(webcam, 0, 0, canvas.width, canvas.height);
       for (const detection of detections) {
         console.log(detection)
         context.beginPath();
-        context.rect(detection.x, detection.y, detection.width, detection.height);
+        context.rect(detection.x * 500, detection.y * 500, detection.width * 500, detection.height * 500);
         context.strokeStyle = 'red';
         context.lineWidth = 2;
         context.stroke();
+        context.font = "28px Arial";
+        context.fillStyle = "red";
+        context.fillText(
+          detection.class.toUpperCase() +
+            ": " +
+            Math.round(parseFloat(detection.probability) * 100) +
+            "%",
+          detection.x * 500,
+          detection.y > 0.1 ? detection.y * 500-10 : (detection.y + detection.height) * 500 + 30
+        );
+
       }
     });
 
@@ -44,8 +55,8 @@ function VideoStream() {
   
 
   const videoConstraints = {
-    height: 1080,
-    width: 1920,
+    height: 500,
+    width: 500,
     // height: 120,
     facingMode: "environment",
   };
