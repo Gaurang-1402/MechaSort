@@ -85,7 +85,3 @@ def move_joints():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-# fetch('http://localhost:5000/api/data')
-#   .then(response => response.json())
-#   .then(data => console.log(data))
