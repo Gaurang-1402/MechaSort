@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;900&display=swap');
+
 .App {
   text-align: center;
 }
@@ -35,4 +37,9 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@font-face {
+  font-family: 'Orbitron', sans-serif;
+  src: url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap') format('truetype');
 }
