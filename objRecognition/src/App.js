@@ -124,6 +124,7 @@ function App() {
   const [c1Count, setc1Count] = useState(0);
   const [c2Count, setc2Count] = useState(0);
   const [c3Count, setc3Count] = useState(0);
+  const [lastClassSeen, setLastClassSeen] = useState("none")
   // const [newCount, setNewCount] = useState(0);
   const [detections, setDetections] = useState([]);
   document.body.style.overflow = "hidden";
@@ -132,12 +133,27 @@ function App() {
 
     socket.on("detections", (detections) => {
       for (var detection in detections) {
-        if (detections[detection].class === "c1") {
-          setc1Count(c1Count + 1);
-        } else if (detections[detection].class === "c2") {
-          setc2Count(c2Count + 1);
-        } else if (detections[detection].class === "c3") {
-          setc3Count(c3Count + 1);
+        if (detections[detection].class === "scissors") {
+          if (lastClassSeen !== "scissors") {
+            setc1Count(c1Count + 1);
+          }
+          else {
+            setLastClassSeen("scissors")
+          }
+        } else if (detections[detection].class === "person") {
+          if (lastClassSeen !== "person") {
+            setc2Count(c2Count + 1);
+          }
+          else {
+            setLastClassSeen("person")
+          }
+        } else if (detections[detection].class === "bottle") {
+          if (lastClassSeen !== "bottle") {
+            setc3Count(c3Count + 1);
+          }
+          else {
+            setLastClassSeen("bottle")
+          }
         }
       }
       // setNewCount(detections.length);
