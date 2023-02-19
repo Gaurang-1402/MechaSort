@@ -51,18 +51,12 @@ def detect_objects():
                 detections = []
                 for box, class_id, prob in zip(boxes, classes, scores):
                     detection = {
-                        # 'x': box[0],
-                        # 'y': box[1],
-                        # 'width': box[2],
-                        # 'height': box[3],
-                        # 'class': class_id,
-                        # 'probability': prob
-                        'x': 0,
-                        'y': 0,
-                        'width': 0.5,
-                        'height': 0.5,
+                        'x': box[0],
+                        'y': box[1],
+                        'width': box[2],
+                        'height': box[3],
                         'class': class_id,
-                        'probability': 1
+                        'probability': prob
                     }
 
                     detections.append(detection)                

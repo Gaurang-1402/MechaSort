@@ -120,23 +120,33 @@ function VideoStream({ detections }) {
 
 function App() {
   const windowSize = useRef([window.innerWidth, window.innerHeight]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [newCount, setNewCount] = useState(0);
+  const [c1Count, setc1Count] = useState(0);
+  const [c2Count, setc2Count] = useState(0);
+  const [c3Count, setc3Count] = useState(0);
+  // const [newCount, setNewCount] = useState(0);
   const [detections, setDetections] = useState([]);
   document.body.style.overflow = "hidden";
   useEffect(() => {
     const socket = io("http://localhost:65534");
 
     socket.on("detections", (detections) => {
-      setTotalCount(totalCount + detections.length);
-      setNewCount(detections.length);
+      for (var detection in detections) {
+        if (detections[detection].class === "c1") {
+          setc1Count(c1Count + 1);
+        } else if (detections[detection].class === "c2") {
+          setc2Count(c2Count + 1);
+        } else if (detections[detection].class === "c3") {
+          setc3Count(c3Count + 1);
+        }
+      }
+      // setNewCount(detections.length);
       setDetections(detections);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [totalCount]);
+  }, [c1Count, c2Count, c3Count]);
 
   const analyticsNumberStyle = { 
     backgroundColor: "#99D98C", 
@@ -206,19 +216,19 @@ function App() {
               Analytics </div>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly" }}>
               <div style={analyticsNumberStyle}>
-                <div style={{fontSize: 30, fontWeight: 600}}> 26 </div>
+                <div style={{fontSize: 30, fontWeight: 600}}> {c1Count} </div>
                 <div style={{fontSize: 12}}>pieces of glass</div>
               </div>
               <div style={analyticsNumberStyle}>
-                <div style={{fontSize: 30, fontWeight: 600}}> 42 </div>
+                <div style={{fontSize: 30, fontWeight: 600}}> {c2Count} </div>
                 <div style={{fontSize: 12}}>pieces of electronics</div>
               </div>
               <div style={analyticsNumberStyle}>
-                <div style={{fontSize: 30, fontWeight: 600}}> 11 </div>
+                <div style={{fontSize: 30, fontWeight: 600}}> {c3Count} </div>
                 <div style={{fontSize: 12}}>pieces of toxic items</div>
               </div>
             </div>
-            <DisplayChart newData={totalCount} />
+            <DisplayChart c1Data={c1Count} c2Data={c2Count} c3Data={c3Count} />
           </div>
         </div>
       </div>

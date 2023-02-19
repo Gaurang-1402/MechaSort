@@ -44,3 +44,51 @@
   font-family: 'Orbitron', sans-serif;
   src: url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap') format('truetype');
 }
+
+
+/* Slider styling */
+input[type="range"] {
+  /* set the height and width of the slider */
+  height: 5px;
+  width: 50%;
+  margin-top: 8px;
+
+  /* remove the default styles */
+  -webkit-appearance: none;
+  -moz-apperance: none;
+  appearance: none;
+
+  /* set the background color to white */
+  background-color: #CCCCCC;
+
+  /* set the border radius to zero for square edges */
+  border-radius: 0;
+
+  /* set the track color to grey */
+  background-image: linear-gradient(to right, #CCCCCC, #CCCCCC);
+
+  /* set the thumb color to grey */
+  cursor: pointer;
+}
+
+/* hide the default thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+/* style the thumb */
+input[type="range"]::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 30%;
+  background-color: #184E77;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 30%;
+  background-color: #184E77;
+  cursor: pointer;
+}
