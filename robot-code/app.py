@@ -23,13 +23,27 @@ def move_joint(joint, position):
         print("here", cur_time - last_time)
         last_time = cur_time
         arm.setPosition(joint, position, 2000, wait=True)
+        
+def move_joint_multiple(joints, positions):
+    global last_time
+    print("moving multiple", joints, positions)
+    cur_time = time.monotonic()
+    if cur_time - last_time > 5.0:
+        print("here", cur_time - last_time)
+        last_time = cur_time
+        for ind in range(len(joints) - 1):
+            arm.setPosition(joints[ind], positions[ind], 2000, wait=False)
+        ind = len(joints) - 1
+        arm.setPosition(joints[ind], positions[ind], 2000, wait=False)    
+        
 
 @app.route('/api/combined_mouse', methods=['POST'])
 def move_combined_mouse():
-    data = request.get_json()
-    move_joint(2, int(data[0]) + 500)
-    move_joint(3, int(data[1]) + 500)
-    move_joint(4, int(data[2]) + 500)
+    move_jointw();
+    # print("we are here")
+    # data = request.get_json()
+    # print(data)
+    # move_joint_multiple([2, 3, 4], [int(data['0'])*10 + 500, int(data['1'])*10 + 500, int(data['2'])*10 + 500])
     return jsonify("Done"), 201
 
 @app.route('/api/joint1', methods=['POST'])
