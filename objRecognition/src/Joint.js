@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const offset = 54
+let anglesGlobal = [0, 0, 0]
 
 function jointApiCalls(angles) {
   var api = 'http://localhost:5000/api/combined_mouse'
@@ -9,7 +10,7 @@ function jointApiCalls(angles) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(angles)
+    body: JSON.stringify(anglesGlobal)
   })
     .then(response => response.json())
     .then(data => {
@@ -21,8 +22,6 @@ function jointApiCalls(angles) {
 }
 
 function ArmModel({top, left}) {
-  console.log(top)
-  console.log(left)
   const [impts, setImpts] = useState([top, top-offset, top-(offset * 2), top-(offset*3)]);
   const [impls, setImpls] = useState([left, left, left, left]);
   const [angles, setAngles] = useState([0, 0, 0]);
@@ -48,13 +47,13 @@ function ArmModel({top, left}) {
     const {clientX, clientY} = e;
     console.log(clientX);
     const direction = clientX > 1200;
-    console.log(clientY, clientX, direction);
     // var newAngles = [...angles];
     if (curMouseIndex > 0) {
       // console.log("here", curMouseIndex, angles[curMouseIndex - 1], direction)
       // newAngles[curMouseIndex-1] = angles[curMouseIndex - 1] + 5 * direction;
       // setAngles(newAngles);
       setAngles(prevAngles => {
+        anglesGlobal = prevAngles
         const newAngles = { ...prevAngles };
         newAngles[curMouseIndex - 1] = prevAngles[curMouseIndex - 1] + 0.2 * direction  - 0.1;
         renderPositions(newAngles);
