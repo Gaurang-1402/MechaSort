@@ -13,13 +13,13 @@ function RobotArm() {
     const { value, name } = event.target;
     var api = "http://localhost:5000/api/";
     switch (name) {
-      case "joint1":
+      case "joint0":
         setJoint1(value);
         break;
-      case "joint2":
+      case "joint1":
         setJoint2(value);
         break;
-      case "joint3":
+      case "joint5":
         setJoint3(value);
         break;
       case "sleep":
