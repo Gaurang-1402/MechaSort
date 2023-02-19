@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import MyComponent from "./joint1";
 
 function RobotArm() {
   const [joint1, setJoint1] = useState(0); // initialize state for the first joint
@@ -12,7 +13,6 @@ function RobotArm() {
   // create a function to handle the movement of each joint
   function handleJointChange(event) {
     const { value, name } = event.target;
-    const data = { name: 'John', age: 30 };
     var api = 'http://localhost:5000/api/'
     switch (name) {
       case "joint1":
@@ -95,7 +95,7 @@ function RobotArm() {
 
   return (
     <div style={robotArmStyle}>
-      <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint1}deg)` }}>
+      {/* <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint1}deg)` }}>
         <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
         <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint2}deg)` }}>
           <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
@@ -112,9 +112,11 @@ function RobotArm() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div>
+
+
+      {/* <div>
         <label>Joint 1:</label>
         <input type="range" min="-180" max="180" name="joint1" value={joint1} onChange={handleJointChange} />
       </div>
@@ -145,7 +147,8 @@ function RobotArm() {
       <div>
         <label>Wake up:</label>
         <input type="range" min="-180" max="180" name="wake" value={joint6} onChange={handleJointChange} />
-      </div>
+      </div> */}
+      <MyComponent />
     </div >
 
   )
