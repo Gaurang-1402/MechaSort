@@ -38,7 +38,7 @@ def detect_objects():
             classes = detections['tagName']
 
             # Filter out the detections with low confidence scores
-            valid_detections = scores > 0.5
+            valid_detections = scores > 0.1
 
             boxes = boxes[valid_detections]
             classes = classes[valid_detections]
@@ -51,12 +51,18 @@ def detect_objects():
                 detections = []
                 for box, class_id, prob in zip(boxes, classes, scores):
                     detection = {
-                        'x': box[0],
-                        'y': box[1],
-                        'width': box[2],
-                        'height': box[3],
+                        # 'x': box[0],
+                        # 'y': box[1],
+                        # 'width': box[2],
+                        # 'height': box[3],
+                        # 'class': class_id,
+                        # 'probability': prob
+                        'x': 0,
+                        'y': 0,
+                        'width': 0.5,
+                        'height': 0.5,
                         'class': class_id,
-                        'probability': prob
+                        'probability': 1
                     }
 
                     detections.append(detection)                
