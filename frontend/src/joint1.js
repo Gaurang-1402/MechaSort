@@ -23,8 +23,13 @@ const MyComponent = () => {
 
   function handleMouseMove(e) {
     const {clientX, clientY} = e;
-    const angle = (Math.atan2(clientY - impts[curMouseIndex], clientX - impls[curMouseIndex]) * 180) / Math.PI;
-    angles[index] += angle;
+    const angle = (Math.atan2(clientY - impts[curMouseIndex] - 45, clientX - impls[curMouseIndex] - 45) * 180) / Math.PI;
+    var newAngles = [...angles];
+    if (curMouseIndex > 0) {
+      newAngles[curMouseIndex-1] = angle;
+      setAngles(newAngles);
+      renderPositions(newAngles);
+    }
     console.log(angle);
   }
   
@@ -70,12 +75,12 @@ const MyComponent = () => {
           onMouseDown={(event) => handleMouseDown(event, index)}
           style={{
             position: 'absolute',
-            width: "90px",
-            height: "90px",
+            width: "100px",
+            height: "100px",
             top: `${impt}px`,
             left: `${impls[index]}px`,
             transform: `rotate(${cummulativeAngles[index]}deg)`,
-            transformOrigin: "30% 95%",
+            transformOrigin: "50% 95%",
           }}
         />
       ))}
