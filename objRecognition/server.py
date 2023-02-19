@@ -33,8 +33,8 @@ def detect_objects():
         if not ret:
             break
         cnt += 1
-        if cnt %5 != 0:
-            break
+        if cnt %30 != 0:
+            continue
         print(frame.shape)
         print("here")
         detections = detr_demo.get_object(Image.fromarray(frame))
