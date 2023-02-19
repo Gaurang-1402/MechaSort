@@ -12,11 +12,13 @@ import {
   Filler,
   Tooltip,
   Legend,
- } from 'chart.js';
- import { Line } from 'react-chartjs-2';
- import "./App.css";
- 
- ChartJS.register(
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import "./App.css";
+import DisplayChart from "./Chart.js";
+import mechasortLogo from "./mechasortLogo.png";
+
+ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
@@ -25,8 +27,8 @@ import {
   Title,
   Tooltip,
   Legend
- );
- 
+);
+
 const STREAM_WIDTH_RATIO = 0.7;
 const STREAM_HEIGHT_RATIO = 0.8;
 const RASPBERRY_PI_STREAM_ADDR = "http://192.168.8.115:5000/video_feed";
@@ -76,9 +78,9 @@ function VideoStream({ detections }) {
       context.fillStyle = "red";
       context.fillText(
         detection.class.toUpperCase() +
-          ": " +
-          Math.round(parseFloat(detection.probability) * 100) +
-          "%",
+        ": " +
+        Math.round(parseFloat(detection.probability) * 100) +
+        "%",
         x,
         detection.y > 0.1 ? y - 10 : y + height + 30
       );
@@ -114,107 +116,45 @@ function VideoStream({ detections }) {
   );
 }
 
-function DisplayChart({ newData }) {
-  const chartOptions = {
-    responsive: true,
-    animation: {
-      duration: 200,
-    },
-    elements: {
-      point: {
-        radius: 0,
-      }
-    },
-    plugins: {
-      title: {
-        display: false,
-      },
-      legend: {
-        display: false
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Time",
-        },
-        ticks: {
-          display: false
-        },
-        grid: {
-          display: false
-        },
-        min: 0,
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Total Number of Detections",
-        },
-        grid: {
-          display: false
-        },
-        min: 0,
-      }
-    },
-  };
- 
-  const [chartData, setChartData] = useState([]);
- 
-  useEffect(() => {
-    const fetchData = () => {
-      // for new anomalies per second
-      // for total anomalies: just concat newData
-      // setChartData(chartData.concat([newData - last]));
-      setChartData(chartData.concat([newData]));
-    };
- 
-    const intervalId = setInterval(fetchData, 1000); // update every second
- 
-    return () => clearInterval(intervalId);
-  }, [chartData, newData]);
- 
-  return (
-    <div >
-      <Line
-        options={chartOptions}
-        data={{
-          labels: Array.from({length: chartData.length}, (v, i) => i),
-          datasets: [
-            {
-              data: chartData,
-              tension: 0.2,
-              fill: true,
-              borderColor: 'rgb(52, 160, 164)',
-              backgroundColor: 'rgb(155, 195, 198)',
-            }
-          ],
-        }}
-      />
-    </div>
-  )
-}
-
 function App() {
   const windowSize = useRef([window.innerWidth, window.innerHeight]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [newCount, setNewCount] = useState(0);
+  const [c1Count, setc1Count] = useState(0);
+  const [c2Count, setc2Count] = useState(0);
+  const [c3Count, setc3Count] = useState(0);
+  // const [newCount, setNewCount] = useState(0);
   const [detections, setDetections] = useState([]);
   document.body.style.overflow = "hidden";
   useEffect(() => {
     const socket = io("http://localhost:65534");
 
     socket.on("detections", (detections) => {
-      setTotalCount(totalCount + detections.length);
-      setNewCount(detections.length);
+      for (var detection in detections) {
+        if (detections[detection].class === "c1") {
+          setc1Count(c1Count + 1);
+        } else if (detections[detection].class === "c2") {
+          setc2Count(c2Count + 1);
+        } else if (detections[detection].class === "c3") {
+          setc3Count(c3Count + 1);
+        }
+      }
+      // setNewCount(detections.length);
       setDetections(detections);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [totalCount]);
+  }, [c1Count, c2Count, c3Count]);
+
+  const analyticsNumberStyle = { 
+    backgroundColor: "#99D98C", 
+    fontFamily: "Orbitron", 
+    borderRadius: "10px", 
+    textAlign: 'center', 
+    width: "80px",
+    padding: "5px", 
+    marginTop: "20px" 
+  }
 
   return (
     <div
@@ -245,7 +185,7 @@ function App() {
           MechaSort
         </div>
         {/* TODO: get the logo to load */}
-        <img src="../assets/mechasortLogo.png" alt="MechaSort Logo" />
+        <img src={mechasortLogo} height="70px" width="60px" style={{margin: "10px"}} alt="MechaSort Logo" />
       </div>
       <div
         style={{
@@ -259,7 +199,7 @@ function App() {
         <div style={{ marginTop: "20px", marginLeft: "20px" }}>
           <VideoStream detections={detections} />
         </div>
-        <div style={{display: "flex", flexDirection: "column", justifyContent: "space-evenly"}}>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly" }}>
           <div
             style={{
               marginTop: "20px",
@@ -269,12 +209,28 @@ function App() {
           >
             <RobotArm></RobotArm>
           </div>
-          <div>
-          <DisplayChart newData={totalCount}/>
+          <div style={{ backgroundColor: "#34A0A4", borderRadius: "25px", marginTop: "20px", marginLeft: "20px", marginBottom: "20px", padding: "20px" }}>
+            <div style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20 }} >
+              Analytics </div>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly" }}>
+              <div style={analyticsNumberStyle}>
+                <div style={{fontSize: 30, fontWeight: 600}}> {c1Count} </div>
+                <div style={{fontSize: 12}}>pieces of glass</div>
+              </div>
+              <div style={analyticsNumberStyle}>
+                <div style={{fontSize: 30, fontWeight: 600}}> {c2Count} </div>
+                <div style={{fontSize: 12}}>pieces of electronics</div>
+              </div>
+              <div style={analyticsNumberStyle}>
+                <div style={{fontSize: 30, fontWeight: 600}}> {c3Count} </div>
+                <div style={{fontSize: 12}}>pieces of toxic items</div>
+              </div>
+            </div>
+            <DisplayChart c1Data={c1Count} c2Data={c2Count} c3Data={c3Count} />
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

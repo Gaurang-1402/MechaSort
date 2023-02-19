@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import "./App.css"
+
 function RobotArm() {
   const [joint1, setJoint1] = useState(0); // initialize state for the first joint
   const [joint2, setJoint2] = useState(0); // initialize state for the second joint
@@ -62,6 +64,14 @@ function RobotArm() {
       });
   }
 
+  const sliderHolderStyle = { 
+    display: 'flex', 
+    flexDirection: 'row', 
+    justifyContent: "space-between", 
+    marginTop: 10, 
+    marginBottom: 10
+  };
+
   // define the style for the robot arm
   const robotArmStyle = {
     position: "relative",
@@ -75,7 +85,7 @@ function RobotArm() {
   const robotButtonStyle = {
     border: "none",
     backgroundColor: "#76C893",
-    borderRadius: "5px",
+    borderRadius: "10px",
     fontFamily: "Orbitron",
     fontWeight: 900,
     fontSize: 18,
@@ -106,152 +116,60 @@ function RobotArm() {
   return (
     <div>
       <div style={robotArmStyle}>
-        {/* <div
-          style={{
-            ...segmentStyle,
-            transform: `translateY(-100%) rotate(${joint1}deg)`,
-          }}
-        >
-          <div
-            style={{
-              ...jointStyle,
-              top: "50%",
-              left: "0%",
-              transform: "translate(-50%, -50%)",
-            }}
-          ></div>
-          <div
-            style={{
-              ...segmentStyle,
-              transform: `translateY(-100%) rotate(${joint2}deg)`,
-            }}
-          >
-            <div
-              style={{
-                ...jointStyle,
-                top: "50%",
-                left: "0%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></div>
-            <div
-              style={{
-                ...segmentStyle,
-                transform: `translateY(-100%) rotate(${joint3}deg)`,
-              }}
-            >
-              <div
-                style={{
-                  ...jointStyle,
-                  top: "50%",
-                  left: "0%",
-                  transform: "translate(-50%, -50%)",
-                }}
-              ></div>
-              <div
-                style={{
-                  ...segmentStyle,
-                  transform: `translateY(-100%) rotate(${joint4}deg)`,
-                }}
-              >
-                <div
-                  style={{
-                    ...jointStyle,
-                    top: "50%",
-                    left: "0%",
-                    transform: "translate(-50%, -50%)",
-                  }}
-                ></div>
-                <div
-                  style={{
-                    ...segmentStyle,
-                    transform: `translateY(-100%) rotate(${joint5}deg)`,
-                  }}
-                >
-                  <div
-                    style={{
-                      ...jointStyle,
-                      top: "50%",
-                      left: "0%",
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  ></div>
-                  <div
-                    style={{
-                      ...segmentStyle,
-                      transform: `translateY(-100%) rotate(${joint6}deg)`,
-                    }}
-                  >
-                    <div
-                      style={{
-                        ...jointStyle,
-                        top: "50%",
-                        left: "0%",
-                        transform: "translate(-50%, -50%)",
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-        <div style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20 }}>
+        <div style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20, marginBottom: 20 }}>
           Robot Control
         </div>
-        <div>
-          <label>Joint 1:</label>
-          <input
-            type="range"
-            min="-180"
-            max="180"
-            name="joint1"
-            value={joint1}
-            onChange={handleJointChange}
-          />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
+          <div>
+            <div style={sliderHolderStyle}>
+              <div style={{ width: "50px" }}>Hand:</div>
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                name="joint1"
+                value={joint1}
+                onChange={handleJointChange}
+              />
+              <div style={{ width: '50px' }}>{joint1}</div>
+            </div>
+            <div style={sliderHolderStyle}>
+              <div style={{ width: "50px" }}>Wrist:</div>
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                name="joint2"
+                value={joint2}
+                onChange={handleJointChange}
+              />
+              <div style={{ width: '50px' }}>{joint2}</div>
+            </div>
+            <div style={sliderHolderStyle}>
+              <div style={{ width: "50px" }}>Base:</div>
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                name="joint3"
+                value={joint3}
+                onChange={handleJointChange}
+              />
+              <div style={{ width: '50px' }}>{joint3}</div>
+            </div>
+          </div>
+          <div style={{ width: "40%" }}>
+            PLACEHOLDER FOR ARM ANIMATION
+          </div>
         </div>
-        <div>
-          <label>Joint 2:</label>
-          <input
-            type="range"
-            min="-180"
-            max="180"
-            name="joint2"
-            value={joint2}
-            onChange={handleJointChange}
-          />
-        </div>
-        <div>
-          <label>Joint 3:</label>
-          <input
-            type="range"
-            min="-180"
-            max="180"
-            name="joint3"
-            value={joint3}
-            onChange={handleJointChange}
-          />
-        </div>
-        {/* <div>
-        <label>Joint 4:</label>
-        <input type="range" min="-180" max="180" name="joint4" value={joint4} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Joint 5:</label>
-        <input type="range" min="-180" max="180" name="joint5" value={joint5} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Joint 6:</label>
-        <input type="range" min="-180" max="180" name="joint6" value={joint6} onChange={handleJointChange} />
-      </div> */}
-
         {/* TODO: add onClick functionality for the buttons */}
       </div>
       <div
         style={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: "space-between",
+          justifyContent: "center",
+          width: "100%",
         }}
       >
         <button style={robotButtonStyle}>Wake Robot</button>

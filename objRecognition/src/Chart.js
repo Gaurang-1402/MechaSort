@@ -27,7 +27,7 @@ import {
   Legend
  );
 
-function DisplayChart({ newData }) {
+function DisplayChart({ c1Data, c2Data, c3Data }) {
     const chartOptions = {
         responsive: true,
         animation: {
@@ -49,58 +49,103 @@ function DisplayChart({ newData }) {
         scales: {
             x: {
                 title: {
-                    display: true,
+                    display: false,
                     text: "Time",
                 },
                 ticks: {
-                    display: false
+                    display: true,
+                    color: "#000000",
+                    font: {
+                        size: 15,
+                        family: 'Inter'
+                    }
                 },
                 grid: {
-                    display: false
+                    display: true,
+                    color: "#CCCCCC"
                 },
                 min: 0,
             },
             y: {
                 title: {
-                    display: true,
+                    display: false,
                     text: "Total Number of Detections",
                 },
                 grid: {
-                    display: false
+                    display: true,
+                    color: "#CCCCCC"
+                },
+                ticks: {
+                    display: true,
+                    color: "#000000",
+                    font: {
+                        size: 15,
+                        family: "Inter"
+                    }
                 },
                 min: 0,
-            }
+            },
         },
     };
 
-    const [chartData, setChartData] = useState([]);
+    const [chartData1, setChartData1] = useState([]);
+    const [chartData2, setChartData2] = useState([]);
+    const [chartData3, setChartData3] = useState([]);
 
     useEffect(() => {
         const fetchData = () => {
             // for new anomalies per second
             // for total anomalies: just concat newData
             // setChartData(chartData.concat([newData - last]));
-            setChartData(chartData.concat([newData]));
+            setChartData1(chartData1.concat([c1Data]));
+            if (chartData1.length >= 10) {
+                chartData1.shift();
+                setChartData1(chartData1);
+            }
+            setChartData2(chartData2.concat([c2Data]));
+            if (chartData2.length >= 10) {
+                chartData2.shift();
+                setChartData2(chartData2);
+            }
+            setChartData3(chartData3.concat([c3Data]));
+            if (chartData3.length >= 10) {
+                chartData3.shift();
+                setChartData3(chartData3);
+            }
         };
 
         const intervalId = setInterval(fetchData, 1000); // update every second
 
         return () => clearInterval(intervalId);
-    }, [chartData, newData]);
+    }, [chartData1, chartData2, chartData3, c1Data, c2Data, c3Data]);
 
     return (
-        <div >
+        <div style={{marginTop: "20px"}}>
             <Line
                 options={chartOptions}
                 data={{
-                    labels: Array.from({ length: chartData.length }, (v, i) => i),
+                    labels: Array.from({ length: chartData1.length }, (v, i) => i),
                     datasets: [
                         {
-                            data: chartData,
+                            data: chartData1,
                             tension: 0.2,
-                            fill: true,
-                            borderColor: 'rgb(52, 160, 164)',
-                            backgroundColor: 'rgb(155, 195, 198)',
+                            fill: false,
+                            borderColor: '#000000',
+                            // backgroundColor: 'rgb(155, 195, 198)',
+                        },
+                        {
+                            data: chartData2,
+                            tension: 0.2,
+                            fill: false,
+                            borderColor: '#000000',
+                            // backgroundColor: 'rgb(155, 195, 198)',
+                        },
+                        {
+                            data: chartData3,
+                            tension: 0.2,
+                            fill: false,
+                            borderColor: '#000000',
+                            // backgroundColor: 'rgb(155, 195, 198)',
                         }
                     ],
                 }}
