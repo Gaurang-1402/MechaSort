@@ -136,29 +136,24 @@ function App() {
         if (detections[detection].class === "scissors") {
           if (lastClassSeen !== "scissors") {
             setc1Count(c1Count + 1);
-          }
-          else {
             setLastClassSeen("scissors")
           }
         } else if (detections[detection].class === "person") {
           if (lastClassSeen !== "person") {
             setc2Count(c2Count + 1);
-          }
-          else {
             setLastClassSeen("person")
-          }
+           }
         } else if (detections[detection].class === "bottle") {
           if (lastClassSeen !== "bottle") {
             setc3Count(c3Count + 1);
-          }
-          else {
             setLastClassSeen("bottle")
           }
         }
-      }
       // setNewCount(detections.length);
-      setDetections(detections);
-    });
+        setDetections(detections);
+      }
+    }
+    );
 
     return () => {
       socket.disconnect();
