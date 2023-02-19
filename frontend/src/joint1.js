@@ -1,5 +1,22 @@
 import React, { useState } from "react";
 
+function jointApiCalls(angles) {
+  var api = 'http://localhost:5000/api/combined_mouse'
+  fetch(api, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(angles)
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
 
 const MyComponent = () => {
   const [impts, setImpts] = useState([500, 410, 320, 230]);
@@ -20,24 +37,26 @@ const MyComponent = () => {
     console.log("mouse up");
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
+    jointApiCalls(angles);
   }
 
   function handleMouseMove(e) {
     const {clientX, clientY} = e;
-    // console.log(clientX, clientY);
+    console.log(clientX, impls[curMouseIndex]);
     const direction = clientX > impls[curMouseIndex];
     console.log(clientY, clientX, direction);
     // var newAngles = [...angles];
     if (curMouseIndex > 0) {
-      console.log("here", curMouseIndex, angles[curMouseIndex - 1])
+      // console.log("here", curMouseIndex, angles[curMouseIndex - 1], direction)
       // newAngles[curMouseIndex-1] = angles[curMouseIndex - 1] + 5 * direction;
       // setAngles(newAngles);
       setAngles(prevAngles => {
         const newAngles = { ...prevAngles };
-        newAngles[curMouseIndex - 1] = prevAngles[curMouseIndex - 1] + 1 * direction;
+        newAngles[curMouseIndex - 1] = prevAngles[curMouseIndex - 1] + 0.2 * direction  - 0.1;
+        renderPositions(newAngles);
         return newAngles;
       });
-      renderPositions(angles);
+      // renderPositions(angles);
     }
     // console.log(angle);
   }
@@ -80,7 +99,7 @@ const MyComponent = () => {
       {impts.map((impt, index) => (
         <img
           key={index}
-          src={require("./lol.png")}
+          src={require("./bar.png")}
           onMouseDown={(event) => handleMouseDown(event, index)}
           style={{
             position: 'absolute',

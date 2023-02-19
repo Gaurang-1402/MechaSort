@@ -24,6 +24,14 @@ def move_joint(joint, position):
         last_time = cur_time
         arm.setPosition(joint, position, 2000, wait=True)
 
+@app.route('/api/combined_mouse', methods=['POST'])
+def move_combined_mouse():
+    data = request.get_json()
+    move_joint(2, int(data[0]) + 500)
+    move_joint(3, int(data[1]) + 500)
+    move_joint(4, int(data[2]) + 500)
+    return jsonify("Done"), 201
+
 @app.route('/api/joint1', methods=['POST'])
 def move_joint1():
     data = request.get_json()
