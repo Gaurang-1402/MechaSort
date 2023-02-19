@@ -9,6 +9,9 @@ pi_camera = VideoCamera(flip=False) # ! flip pi camera if upside down.
 # App 
 app = Flask(__name__)
 
+def index():
+    return render_template('index.html')
+
 def gen(camera):
     #get camera frame
     while True:
