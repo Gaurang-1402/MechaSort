@@ -110,6 +110,8 @@ Furthermore, MechaSort's potential impact extends beyond the recycling industry.
 Overall, MechaSort is a solution that addresses the climate crisis and environmental injustice while promoting social equity and a just transition to a clean green economy. By recognizing this project with the Sustainability Grand Prize, we can showcase the power of technology and innovation in creating a more sustainable and equitable future for all communities.
   
 
+[![final.png](https://i.postimg.cc/W1mz6XS9/final.png)](https://postimg.cc/hXjKK8kx)
+
 ## Most Ethically Engaged Hack by Stanford Center for Ethics & Society 👼🏻
 
 The MechaSort system is a solution that addresses the need for better working conditions for waste sorters. It achieves this by utilizing advanced technology to replace human workers with a manipulator arm on the sorting line conveyor belt. The system allows waste workers to use sensors to identify non-recyclable waste on a software client and segregate it using a manipulator arm.
@@ -193,7 +195,7 @@ As a team committed to sustainability and improving human health and safety, we 
   
  ## Best Web Frontend by Vercel 🎨
   
-Not only did we come up with novel hardware applications to solve our problem but also provided an easy-to-use interface for our customers to familiarize themselves with novel robotics technologies. This can be seen in our client application where we built a **novel Robotics control system in JavaScript that**
+Not only did we come up with novel hardware applications to solve our problem but also provided an easy-to-use interface for our customers to familiarize themselves with novel robotics technologies. This can be seen in our client application where we built a **novel Robotics control system in JavaScript that can control the robot using the actual links and joints of the robot and without sliders.** This system is very user friendly and makes it easy for our customers, waste sorters to get accustomed to the new robotics system.
 
 [![control.png](https://i.postimg.cc/VLKxc1JX/control.png)](https://postimg.cc/JGB6bfch)
 
