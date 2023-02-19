@@ -251,7 +251,8 @@ function RobotArm() {
         style={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: "space-between",
+          justifyContent: "center",
+          width: "100%",
         }}
       >
         <button style={robotButtonStyle}>Wake Robot</button>

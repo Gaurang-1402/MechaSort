@@ -49,27 +49,42 @@ function DisplayChart({ newData }) {
         scales: {
             x: {
                 title: {
-                    display: true,
+                    display: false,
                     text: "Time",
                 },
                 ticks: {
-                    display: false
+                    display: true,
+                    color: "#000000",
+                    font: {
+                        size: 15,
+                        family: 'Inter'
+                    }
                 },
                 grid: {
-                    display: false
+                    display: true,
+                    color: "#CCCCCC"
                 },
                 min: 0,
             },
             y: {
                 title: {
-                    display: true,
+                    display: false,
                     text: "Total Number of Detections",
                 },
                 grid: {
-                    display: false
+                    display: true,
+                    color: "#CCCCCC"
+                },
+                ticks: {
+                    display: true,
+                    color: "#000000",
+                    font: {
+                        size: 15,
+                        family: "Inter"
+                    }
                 },
                 min: 0,
-            }
+            },
         },
     };
 
@@ -81,6 +96,10 @@ function DisplayChart({ newData }) {
             // for total anomalies: just concat newData
             // setChartData(chartData.concat([newData - last]));
             setChartData(chartData.concat([newData]));
+            if (chartData.length >= 10) {
+                chartData.shift();
+                setChartData(chartData);
+            }
         };
 
         const intervalId = setInterval(fetchData, 1000); // update every second
@@ -89,7 +108,7 @@ function DisplayChart({ newData }) {
     }, [chartData, newData]);
 
     return (
-        <div >
+        <div style={{marginTop: "20px"}}>
             <Line
                 options={chartOptions}
                 data={{
@@ -98,9 +117,9 @@ function DisplayChart({ newData }) {
                         {
                             data: chartData,
                             tension: 0.2,
-                            fill: true,
-                            borderColor: 'rgb(52, 160, 164)',
-                            backgroundColor: 'rgb(155, 195, 198)',
+                            fill: false,
+                            borderColor: '#000000',
+                            // backgroundColor: 'rgb(155, 195, 198)',
                         }
                     ],
                 }}
