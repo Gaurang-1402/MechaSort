@@ -184,7 +184,6 @@ function App() {
         >
           MechaSort
         </div>
-        {/* TODO: get the logo to load */}
         <img src={mechasortLogo} height="70px" width="60px" style={{margin: "10px"}} alt="MechaSort Logo" />
       </div>
       <div

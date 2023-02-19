@@ -16,8 +16,8 @@ model = tf.saved_model.load('./model')
 predict_fn = model.signatures['serving_default']
 
 # Initialize the video stream
-# cap = cv2.VideoCapture('http://raspberry-pi-ip-address:port')
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('http://192.168.8.115:5000/video_feed')
+# cap = cv2.VideoCapture(0)
 
 @socketio.on_error()
 def chat_error_handler(e):
