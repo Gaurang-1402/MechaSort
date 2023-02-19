@@ -86,21 +86,29 @@ function VideoStream({ detections }) {
   }
 
   return (
-    <div>
+    <div style = {{
+      position: "relative",
+      width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+      height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+    }}>
       <img id="img" 
-        style={{
-          position: "relative",
-          borderRadius: "25px",
+        style={{ 
+          position: "absolute", 
+          borderRadius: "20px",
           width: windowSize.current[0] * STREAM_WIDTH_RATIO,
           height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
-        }} 
+        }}
         src={RASPBERRY_PI_STREAM_ADDR} 
         alt="raspberry pi video stream">
       </img>
       {/* TODO: check if the left and top are correct */}
       <canvas
         ref={canvasRef}
-        style={{ position: "absolute", left: "20px", top: "20px" }}
+        style={{ 
+          position: "absolute", 
+          width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+          height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+        }}
       ></canvas>
     </div>
   );
