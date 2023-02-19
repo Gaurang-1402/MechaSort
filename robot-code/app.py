@@ -6,19 +6,19 @@ app = Flask(__name__)
 CORS(app)
 
 import xarm
-# arm = xarm.Controller('USB')
+arm = xarm.Controller('USB')
 
 last_time = time.monotonic()
 time_diff_allowed = 3.0
 
-standard_move_time = 2000
+standard_move_time = 1000
 
 
 def setPositionWrapper(joint, angle, wait):
     if joint == 3:
         print("Skipping joint 3 movement to avoid AI detected collision")
     print("move joint", joint, "to angle", angle);
-    # arm.setPosition(joint, angle, standard_move_time, wait)
+    arm.setPosition(joint, angle, standard_move_time, wait)
 
 def spaced_move_joint(joint, position):
     global last_time
@@ -88,7 +88,7 @@ def move_joints():
 @app.route('/api/combined_mouse', methods=['POST'])
 def move_combined_mouse():
     data = request.get_json()
-    spaced_move_joints_4_5(normalize_angle(data['1']), normalize_angle(data['2']))
+    spaced_move_joints_4_5(normalize_angle(data['1']), normalize_angle(data['0']))
     return jsonify("Done"), 201
 
 if __name__ == '__main__':
