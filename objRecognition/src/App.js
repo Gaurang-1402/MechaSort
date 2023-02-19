@@ -138,15 +138,15 @@ function App() {
             setc1Count(c1Count + 1);
             setLastClassSeen("scissors")
           }
-        } else if (detections[detection].class === "person") {
-          if (lastClassSeen !== "person") {
+        } else if (detections[detection].class === "wine glass") {
+          if (lastClassSeen !== "wine glass") {
             setc2Count(c2Count + 1);
-            setLastClassSeen("person")
+            setLastClassSeen("wine glass")
            }
-        } else if (detections[detection].class === "bottle") {
-          if (lastClassSeen !== "bottle") {
+        } else if (detections[detection].class === "mouse") {
+          if (lastClassSeen !== "mouse") {
             setc3Count(c3Count + 1);
-            setLastClassSeen("bottle")
+            setLastClassSeen("mouse")
           }
         }
       // setNewCount(detections.length);
