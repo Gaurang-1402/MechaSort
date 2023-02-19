@@ -16,6 +16,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import "./App.css";
 import DisplayChart from "./Chart.js";
+import mechasortLogo from "./mechasortLogo.png";
 
 ChartJS.register(
   CategoryScale,
@@ -176,7 +177,7 @@ function App() {
           MechaSort
         </div>
         {/* TODO: get the logo to load */}
-        <img src="../assets/mechasortLogo.png" alt="MechaSort Logo" />
+        <img src={mechasortLogo} height="70px" width="60px" style={{margin: "10px"}} alt="MechaSort Logo" />
       </div>
       <div
         style={{

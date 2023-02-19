@@ -75,7 +75,7 @@ function RobotArm() {
   const robotButtonStyle = {
     border: "none",
     backgroundColor: "#76C893",
-    borderRadius: "5px",
+    borderRadius: "10px",
     fontFamily: "Orbitron",
     fontWeight: 900,
     fontSize: 18,
