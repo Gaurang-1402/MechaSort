@@ -78,24 +78,6 @@ function ArmModel({top, left}) {
     setImpls(impls);
   }
   
-  const handleAngleChange = (event) => {
-    const { name, value } = event.target;
-    var newAngles = [...angles];
-    if (value === "") {
-      return;
-    }
-    const intValue = parseInt(value);
-    if (name === angleNames[0]) {
-      newAngles[0] = intValue;
-    } else if (name === angleNames[1]) {
-      newAngles[1] = intValue;
-    } else if (name === angleNames[2]) {
-      newAngles[2] = intValue;
-    }
-    setAngles(newAngles);
-    renderPositions(newAngles);
-  }
-
   const jointMouseDown = (event) => {
     event.preventDefault();
   }
