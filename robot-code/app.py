@@ -48,7 +48,7 @@ def normalize_angle(data):
 
 def move_joint_helper(data, joint):
     print("move", data, joint)
-    spaced_move_joint(joint, normalize_angle(data), wait=True)
+    spaced_move_joint(joint, normalize_angle(data))
     return jsonify("Done"), 201
 
 ######################## API Receivers ########################
