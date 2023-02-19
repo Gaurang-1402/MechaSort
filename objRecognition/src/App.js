@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import io from "socket.io-client";
-import Webcam from "react-webcam";
 import RobotArm from "./RobotArm.js";
+
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,8 +13,7 @@ import {
   Filler,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+} from "chart.js";
 import "./App.css";
 import DisplayChart from "./Chart.js";
 import mechasortLogo from "./mechasortLogo.png";
@@ -78,9 +78,9 @@ function VideoStream({ detections }) {
       context.fillStyle = "red";
       context.fillText(
         detection.class.toUpperCase() +
-        ": " +
-        Math.round(parseFloat(detection.probability) * 100) +
-        "%",
+          ": " +
+          Math.round(parseFloat(detection.probability) * 100) +
+          "%",
         x,
         detection.y > 0.1 ? y - 10 : y + height + 30
       );
@@ -88,26 +88,29 @@ function VideoStream({ detections }) {
   }
 
   return (
-    <div style = {{
-      position: "relative",
-      width: windowSize.current[0] * STREAM_WIDTH_RATIO,
-      height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
-    }}>
-      <img id="img" 
-        style={{ 
-          position: "absolute", 
+    <div
+      style={{
+        position: "relative",
+        width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+        height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+      }}
+    >
+      <img
+        id="img"
+        style={{
+          position: "absolute",
           borderRadius: "20px",
           width: windowSize.current[0] * STREAM_WIDTH_RATIO,
           height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
         }}
-        src={RASPBERRY_PI_STREAM_ADDR} 
-        alt="raspberry pi video stream">
-      </img>
+        src={RASPBERRY_PI_STREAM_ADDR}
+        alt="raspberry pi video stream"
+      ></img>
       {/* TODO: check if the left and top are correct */}
       <canvas
         ref={canvasRef}
-        style={{ 
-          position: "absolute", 
+        style={{
+          position: "absolute",
           width: windowSize.current[0] * STREAM_WIDTH_RATIO,
           height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
         }}
@@ -146,15 +149,15 @@ function App() {
     };
   }, [c1Count, c2Count, c3Count]);
 
-  const analyticsNumberStyle = { 
-    backgroundColor: "#99D98C", 
-    fontFamily: "Orbitron", 
-    borderRadius: "10px", 
-    textAlign: 'center', 
-    width: "80px",
-    padding: "5px", 
-    marginTop: "20px" 
-  }
+  const analyticsNumberStyle = {
+    backgroundColor: "#99D98C",
+    fontFamily: "Orbitron",
+    borderRadius: "10px",
+    textAlign: "center",
+    width: "60px",
+    padding: "5px",
+    marginTop: "10px",
+  };
 
   return (
     <div
@@ -162,6 +165,7 @@ function App() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
+        height: "1000px"
       }}
     >
       <div
@@ -184,7 +188,13 @@ function App() {
         >
           MechaSort
         </div>
-        <img src={mechasortLogo} height="70px" width="60px" style={{margin: "10px"}} alt="MechaSort Logo" />
+        <img
+          src={mechasortLogo}
+          height="70px"
+          width="60px"
+          style={{ margin: "10px" }}
+          alt="MechaSort Logo"
+        />
       </div>
       <div
         style={{
@@ -198,38 +208,59 @@ function App() {
         <div style={{ marginTop: "20px", marginLeft: "20px" }}>
           <VideoStream detections={detections} />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly" }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
               marginTop: "20px",
               marginLeft: "20px",
-              width: windowSize.current[0] * (1 - STREAM_WIDTH_RATIO) - 100,
+              width: "85%",
             }}
           >
             <RobotArm></RobotArm>
           </div>
-          <div style={{ backgroundColor: "#34A0A4", borderRadius: "25px", marginTop: "20px", marginLeft: "20px", marginBottom: "20px", padding: "20px" }}>
-            <div style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20 }} >
-              Analytics </div>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly" }}>
+          <div
+            style={{
+              backgroundColor: "#34A0A4",
+              width: "85%",
+              // height: "80%",
+              height: "250px",
+              borderRadius: "25px",
+              marginLeft: "20px",
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20, }}
+            >
+              Analytics{" "}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+              }}
+            >
               <div style={analyticsNumberStyle}>
-                <div style={{fontSize: 30, fontWeight: 600}}> {c1Count} </div>
-                <div style={{fontSize: 12}}>pieces of glass</div>
+                <div style={{ fontSize: 18, fontWeight: 600 }}> {c1Count} </div>
+                <div style={{ fontSize: 10 }}>pieces of glass</div>
               </div>
               <div style={analyticsNumberStyle}>
-                <div style={{fontSize: 30, fontWeight: 600}}> {c2Count} </div>
-                <div style={{fontSize: 12}}>pieces of electronics</div>
+                <div style={{ fontSize: 18, fontWeight: 600 }}> {c2Count} </div>
+                <div style={{ fontSize: 10 }}>pieces of electronics</div>
               </div>
               <div style={analyticsNumberStyle}>
-                <div style={{fontSize: 30, fontWeight: 600}}> {c3Count} </div>
-                <div style={{fontSize: 12}}>pieces of toxic items</div>
+                <div style={{ fontSize: 18, fontWeight: 600 }}> {c3Count} </div>
+                <div style={{ fontSize: 10 }}>pieces of toxic items</div>
               </div>
             </div>
+            <div style={{width: "100%"}}>
             <DisplayChart c1Data={c1Count} c2Data={c2Count} c3Data={c3Count} />
+            </div>
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 

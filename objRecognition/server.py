@@ -38,7 +38,7 @@ def detect_objects():
             classes = detections['tagName']
 
             # Filter out the detections with low confidence scores
-            valid_detections = scores > 0.1
+            valid_detections = scores > 0.5
 
             boxes = boxes[valid_detections]
             classes = classes[valid_detections]

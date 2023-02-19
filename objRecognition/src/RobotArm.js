@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ArmModel from "./Joint.js"
 
 import "./App.css"
 
@@ -6,9 +7,6 @@ function RobotArm() {
   const [joint1, setJoint1] = useState(0); // initialize state for the first joint
   const [joint2, setJoint2] = useState(0); // initialize state for the second joint
   const [joint3, setJoint3] = useState(0); // initialize state for the third joint
-  const [joint4, setJoint4] = useState(0); // initialize state for the fourth joint
-  const [joint5, setJoint5] = useState(0); // initialize state for the fifth joint
-  const [joint6, setJoint6] = useState(0); // initialize state for the sixth joint
 
   // create a function to handle the movement of each joint
   function handleJointChange(event) {
@@ -26,18 +24,6 @@ function RobotArm() {
       case "joint3":
         setJoint3(value);
         api += "joint3";
-        break;
-      case "joint4":
-        setJoint4(value);
-        api += "joint4";
-        break;
-      case "joint5":
-        setJoint5(value);
-        api += "joint5";
-        break;
-      case "joint6":
-        setJoint6(value);
-        api += "joint6";
         break;
       case "sleep":
         api += "sleep";
@@ -66,20 +52,24 @@ function RobotArm() {
 
   const sliderHolderStyle = { 
     display: 'flex', 
-    flexDirection: 'row', 
+    flexDirection: 'column', 
     justifyContent: "space-between", 
-    marginTop: 10, 
-    marginBottom: 10
+    marginTop: 10,
+    marginBottom: 10,
+    width: "100%"
   };
 
   // define the style for the robot arm
   const robotArmStyle = {
     position: "relative",
     width: "100%",
-    height: "100%",
+    // height: "100%",
+    height: "350px",
     backgroundColor: "#34A0A4",
     borderRadius: "25px",
-    padding: "20px",
+    paddingTop: "20px",
+    paddingLeft: "20px",
+    paddingRight: "20px"
   };
 
   const robotButtonStyle = {
@@ -87,10 +77,13 @@ function RobotArm() {
     backgroundColor: "#76C893",
     borderRadius: "10px",
     fontFamily: "Orbitron",
-    fontWeight: 900,
-    fontSize: 18,
+    fontWeight: 600,
+    fontSize: 15,
     padding: "10px",
-    margin: "10px"
+    // margin: "10px",
+    marginTop: "100px",
+    marginLeft: "10px",
+    marginRight: "10px"
   };
 
   // define the style for each segment of the robot arm
@@ -114,15 +107,15 @@ function RobotArm() {
   };
 
   return (
-    <div>
+    <div style={{paddingBottom: "10px"}}>
       <div style={robotArmStyle}>
         <div style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20, marginBottom: 20 }}>
           Robot Control
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
-          <div>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "center" }}>
+          <div style={{width:"100%"}}>
             <div style={sliderHolderStyle}>
-              <div style={{ width: "50px" }}>Hand:</div>
+              <div >Hand: {joint1}</div>
               <input
                 type="range"
                 min="-180"
@@ -131,10 +124,9 @@ function RobotArm() {
                 value={joint1}
                 onChange={handleJointChange}
               />
-              <div style={{ width: '50px' }}>{joint1}</div>
             </div>
             <div style={sliderHolderStyle}>
-              <div style={{ width: "50px" }}>Wrist:</div>
+              <div >Wrist: {joint2}</div>
               <input
                 type="range"
                 min="-180"
@@ -143,10 +135,9 @@ function RobotArm() {
                 value={joint2}
                 onChange={handleJointChange}
               />
-              <div style={{ width: '50px' }}>{joint2}</div>
             </div>
             <div style={sliderHolderStyle}>
-              <div style={{ width: "50px" }}>Base:</div>
+              <div >Base: {joint3}</div>
               <input
                 type="range"
                 min="-180"
@@ -155,16 +146,13 @@ function RobotArm() {
                 value={joint3}
                 onChange={handleJointChange}
               />
-              <div style={{ width: '50px' }}>{joint3}</div>
             </div>
           </div>
-          <div style={{ width: "40%" }}>
-            PLACEHOLDER FOR ARM ANIMATION
+          <div style={{ width: "100%" }}>
+            <ArmModel top={260} left={150} />
           </div>
         </div>
-        {/* TODO: add onClick functionality for the buttons */}
-      </div>
-      <div
+        <div
         style={{
           display: "flex",
           flexDirection: "row",
@@ -172,8 +160,9 @@ function RobotArm() {
           width: "100%",
         }}
       >
-        <button style={robotButtonStyle}>Wake Robot</button>
-        <button style={robotButtonStyle}>Sleep Robot</button>
+        <button style={robotButtonStyle} name="wake" onClick={handleJointChange}>Wake</button>
+        <button style={robotButtonStyle} name="sleep" onClick={handleJointChange}>Sleep</button>
+      </div>
       </div>
     </div>
   );
