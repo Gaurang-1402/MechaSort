@@ -15,25 +15,21 @@ function RobotArm() {
     switch (name) {
       case "joint1":
         setJoint1(value);
-        api += "joint1";
         break;
       case "joint2":
         setJoint2(value);
-        api += "joint2";
         break;
       case "joint3":
         setJoint3(value);
-        api += "joint3";
         break;
       case "sleep":
-        api += "sleep";
-        break;
       case "wake":
-        api += "wake";
         break;
-      default:
+      default: // Unexpected name
+        console.warn("Expected name " + name);
         break;
     }
+    api += name;
     fetch(api, {
       method: "POST",
       headers: {
@@ -86,26 +82,6 @@ function RobotArm() {
     marginRight: "10px"
   };
 
-  // define the style for each segment of the robot arm
-  const segmentStyle = {
-    position: "absolute",
-    width: "60px",
-    height: "20px",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "grey",
-  };
-
-  // define the style for each joint of the robot arm
-  const jointStyle = {
-    position: "absolute",
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: "black",
-  };
-
   return (
     <div style={{paddingBottom: "10px"}}>
       <div style={robotArmStyle}>
@@ -120,7 +96,7 @@ function RobotArm() {
                 type="range"
                 min="-180"
                 max="180"
-                name="joint1"
+                name="joint0"
                 value={joint1}
                 onChange={handleJointChange}
               />
@@ -131,7 +107,7 @@ function RobotArm() {
                 type="range"
                 min="-180"
                 max="180"
-                name="joint2"
+                name="joint1"
                 value={joint2}
                 onChange={handleJointChange}
               />
@@ -142,7 +118,7 @@ function RobotArm() {
                 type="range"
                 min="-180"
                 max="180"
-                name="joint3"
+                name="joint5"
                 value={joint3}
                 onChange={handleJointChange}
               />

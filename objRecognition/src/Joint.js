@@ -26,7 +26,6 @@ function ArmModel({top, left}) {
   const [impls, setImpls] = useState([left, left, left, left]);
   const [angles, setAngles] = useState([0, 0, 0]);
 
-  const angleNames = ["joint1", "joint2", "joint3"];
   var curMouseIndex = -1;
 
   function handleMouseDown(event, index) {
@@ -44,8 +43,8 @@ function ArmModel({top, left}) {
   }
 
   function handleMouseMove(e) {
-    const {clientX, clientY} = e;
-    console.log(clientX);
+    const {clientX} = e;
+    // console.log(clientX);
     const direction = clientX > 1200;
     // var newAngles = [...angles];
     if (curMouseIndex > 0) {
