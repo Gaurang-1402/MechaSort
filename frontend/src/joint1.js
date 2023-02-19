@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
+
 const MyComponent = () => {
   const [impts, setImpts] = useState([500, 410, 320, 230]);
   const [impls, setImpls] = useState([500, 500, 500, 500]);
   const [angles, setAngles] = useState([0, 0, 0]);
-  // const [isDragging, setIsDragging] = useState(false);
+
   const angleNames = ["joint1", "joint2", "joint3"];
   var curMouseIndex = -1;
 
@@ -23,14 +24,22 @@ const MyComponent = () => {
 
   function handleMouseMove(e) {
     const {clientX, clientY} = e;
-    const angle = (Math.atan2(clientY - impts[curMouseIndex] - 45, clientX - impls[curMouseIndex] - 45) * 180) / Math.PI;
-    var newAngles = [...angles];
+    // console.log(clientX, clientY);
+    const direction = clientX > impls[curMouseIndex];
+    console.log(clientY, clientX, direction);
+    // var newAngles = [...angles];
     if (curMouseIndex > 0) {
-      newAngles[curMouseIndex-1] = angle;
-      setAngles(newAngles);
-      renderPositions(newAngles);
+      console.log("here", curMouseIndex, angles[curMouseIndex - 1])
+      // newAngles[curMouseIndex-1] = angles[curMouseIndex - 1] + 5 * direction;
+      // setAngles(newAngles);
+      setAngles(prevAngles => {
+        const newAngles = { ...prevAngles };
+        newAngles[curMouseIndex - 1] = prevAngles[curMouseIndex - 1] + 1 * direction;
+        return newAngles;
+      });
+      renderPositions(angles);
     }
-    console.log(angle);
+    // console.log(angle);
   }
   
   const renderPositions = (angles) => {
