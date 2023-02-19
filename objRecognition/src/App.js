@@ -29,6 +29,7 @@ import {
  
 const STREAM_WIDTH_RATIO = 0.7;
 const STREAM_HEIGHT_RATIO = 0.8;
+const RASPBERRY_PI_STREAM_ADDR = "http://192.168.8.115:5000/video_feed";
 
 function VideoStream({ detections }) {
   const webcamRef = useRef(null);
@@ -84,29 +85,18 @@ function VideoStream({ detections }) {
     }
   }
 
-  const videoConstraints = {
-    width: windowSize.current[0] * STREAM_WIDTH_RATIO,
-    height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
-    facingMode: "environment",
-  };
-
   return (
     <div>
-      <Webcam
-        audio={false}
-        id="img"
-        ref={webcamRef}
+      <img id="img" 
         style={{
           position: "relative",
-          width: "100%",
-          height: "100%",
           borderRadius: "25px",
-        }}
-        screenshotQuality={1}
-        screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints}
-      />
-      {/* <video ref={webcamRef} src="http://192.168.8.115:5000/video_feed" autoPlay></video> */}
+          width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+          height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+        }} 
+        src={RASPBERRY_PI_STREAM_ADDR} 
+        alt="raspberry pi video stream">
+      </img>
       {/* TODO: check if the left and top are correct */}
       <canvas
         ref={canvasRef}
