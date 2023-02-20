@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import io from "socket.io-client";
 import RobotArm from "./RobotArm.js";
+// import { createProxyMiddleware } from 'http-proxy-middleware';
 
 
 import {
@@ -32,6 +33,7 @@ ChartJS.register(
 const STREAM_WIDTH_RATIO = 0.7;
 const STREAM_HEIGHT_RATIO = 0.8;
 const RASPBERRY_PI_STREAM_ADDR = "http://192.168.8.115:5000/video_feed";
+const CHECKBOOK_API_KEY = "eae41a248bf50f887509027dee253c95:a11074c07de67c2addd8c61cd0476fe9";
 
 function VideoStream({ detections }) {
   const webcamRef = useRef(null);
@@ -78,9 +80,9 @@ function VideoStream({ detections }) {
       context.fillStyle = "red";
       context.fillText(
         detection.class.toUpperCase() +
-          ": " +
-          Math.round(parseFloat(detection.probability) * 100) +
-          "%",
+        ": " +
+        Math.round(parseFloat(detection.probability) * 100) +
+        "%",
         x,
         detection.y > 0.1 ? y - 10 : y + height + 30
       );
@@ -128,6 +130,44 @@ function App() {
   // const [newCount, setNewCount] = useState(0);
   const [detections, setDetections] = useState([]);
   document.body.style.overflow = "hidden";
+
+  const checkbookButton = {
+    border: "none",
+    backgroundColor: "#76C893",
+    borderRadius: "10px",
+    fontFamily: "Orbitron",
+    fontWeight: 600,
+    fontSize: 15,
+    padding: "10px",
+    cursor: "pointer",
+    // margin: "10px",
+    // marginTop: "100px",
+    // marginLeft: "10px",
+    // marginRight: "10px"
+  };
+
+  function handleRequestPayment(event) {
+    fetch('https://sandbox.checkbook.io/v3/check/digital', {
+      method: 'POST',
+      // mode: 'no-cors',
+      headers: {
+        'Authorization': 'bearer eae41a248bf50f887509027dee253c95:a11074c07de67c2addd8c61cd0476fe9',
+        'Accept': 'application/json',
+        // 'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        recipient: 'testing@checkbook.io',
+        name: 'Widgets Inc.',
+        amount: 5,
+        description: 'Test Payment'
+      })
+    })
+      .then(data => console.log(data))
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+  }
+
   useEffect(() => {
     const socket = io("http://localhost:65534");
 
@@ -142,14 +182,14 @@ function App() {
           if (lastClassSeen !== "wine glass") {
             setc2Count(c2Count + 1);
             setLastClassSeen("wine glass")
-           }
+          }
         } else if (detections[detection].class === "mouse") {
           if (lastClassSeen !== "mouse") {
             setc3Count(c3Count + 1);
             setLastClassSeen("mouse")
           }
         }
-      // setNewCount(detections.length);
+        // setNewCount(detections.length);
         setDetections(detections);
       }
     }
@@ -158,7 +198,7 @@ function App() {
     return () => {
       socket.disconnect();
     };
-  }, [c1Count, c2Count, c3Count]);
+  }, [c1Count, c2Count, c3Count, lastClassSeen]);
 
   const analyticsNumberStyle = {
     backgroundColor: "#99D98C",
@@ -206,6 +246,9 @@ function App() {
           style={{ margin: "10px" }}
           alt="MechaSort Logo"
         />
+        <div style={{ position: "absolute", right: "80px", top: "25px" }}>
+          <button style={checkbookButton} onClick={() => handleRequestPayment()}>Request Payment</button>
+        </div>
       </div>
       <div
         style={{
@@ -265,8 +308,8 @@ function App() {
                 <div style={{ fontSize: 10 }}>pieces of toxic items</div>
               </div>
             </div>
-            <div style={{width: "100%"}}>
-            <DisplayChart c1Data={c1Count} c2Data={c2Count} c3Data={c3Count} />
+            <div style={{ width: "100%" }}>
+              <DisplayChart c1Data={c1Count} c2Data={c2Count} c3Data={c3Count} />
             </div>
           </div>
         </div>
