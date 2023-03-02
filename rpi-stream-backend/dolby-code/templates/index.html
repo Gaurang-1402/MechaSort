@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dolby.io Video Streaming Client</title>
+    <script src="https://sdk.dolby.io/latest/dolbyio.min.js"></script>
+</head>
+<body>
+    <div id="dolby-video"></div>
+
+    <script>
+        const client = DolbyIO.createClient({
+            key: '{{ api_key }}',
+            secret: '{{ api_secret }}'
+        });
+
+        const stream = client.liveStreaming.createStream({
+            streamId: '{{ stream_id }}'
+        });
+
+        stream.attachToElement(document.getElementById('dolby-video'));
+        stream.play();
+    </script>
+</body>
+</html>

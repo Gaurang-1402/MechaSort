@@ -9,7 +9,7 @@ import xarm
 arm = xarm.Controller('USB')
 
 last_time = time.monotonic()
-time_diff_allowed = 3.0
+time_diff_allowed = 1.5
 
 standard_move_time = 1000
 
@@ -36,6 +36,14 @@ def spaced_move_joints_4_5(angle_4, angle_5):
         setPositionWrapper(4, angle_4, wait=False)
         setPositionWrapper(5, angle_5, wait=True)    
 
+def normalize_angle_4_5(data):
+    # The range for data is mostly [-30, 30]
+    # Scaling it to [-360, 360]
+    # Adding 500 since accepted values in [0, 1000]
+    # Avoiding extremes for safety
+    data = int(data)
+    data = max(-45, min(45, data)) # Clip in [-180,180] as a safeguard
+    return 500 + 12 * data
 
 def normalize_angle(data):
     # The range for data is [-180, 180]
@@ -70,7 +78,7 @@ def move_jointw():
     setPositionWrapper(1, 500, wait=False)
     setPositionWrapper(2, 500, wait=False)
     # DO NOT UNCOMMENT: setPositionWrapper(3, 500, wait=False)
-    setPositionWrapper(4, 500, wait=False)
+    setPositionWrapper(4, 100, wait=False)
     setPositionWrapper(5, 500, wait=False)
     setPositionWrapper(6, 500, wait=True)
     return jsonify("Done"), 201
@@ -80,7 +88,7 @@ def move_joints():
     setPositionWrapper(1, 500, wait=False)
     setPositionWrapper(2, 500, wait=False)
     # DO NOT UNCOMMENT: setPositionWrapper(3, 500, wait=False)
-    setPositionWrapper(4, 100, wait=False)
+    setPositionWrapper(4, 500, wait=False)
     setPositionWrapper(5, 500, wait=False)
     setPositionWrapper(6, 500, wait=True)
     return jsonify("Done"), 201
@@ -88,7 +96,7 @@ def move_joints():
 @app.route('/api/combined_mouse', methods=['POST'])
 def move_combined_mouse():
     data = request.get_json()
-    spaced_move_joints_4_5(normalize_angle(data['1']), normalize_angle(data['0']))
+    spaced_move_joints_4_5(1000 - normalize_angle_4_5(data['1']), normalize_angle_4_5(data['0']))
     return jsonify("Done"), 201
 
 if __name__ == '__main__':

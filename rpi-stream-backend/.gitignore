@@ -48,3 +48,5 @@ __pycache__/
 *.jpg
 *.jpeg
 *.png
+
+/dolby-code/config.ini

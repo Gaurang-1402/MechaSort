@@ -1,333 +1,278 @@
+import { useRef, useEffect, useState } from "react";
+import io from "socket.io-client";
+import RobotArm from "./RobotArm.js";
 
-import React, { useState } from "react";
-import MyComponent from "./joint1";
 
-function RobotArm() {
-  const [joint1, setJoint1] = useState(0); // initialize state for the first joint
-  const [joint2, setJoint2] = useState(0); // initialize state for the second joint
-  const [joint3, setJoint3] = useState(0); // initialize state for the third joint
-  const [joint4, setJoint4] = useState(0); // initialize state for the fourth joint
-  const [joint5, setJoint5] = useState(0); // initialize state for the fifth joint
-  const [joint6, setJoint6] = useState(0); // initialize state for the sixth joint
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Filler,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import "./App.css";
+import DisplayChart from "./Chart.js";
+import mechasortLogo from "./mechasortLogo.png";
 
-  // create a function to handle the movement of each joint
-  function handleJointChange(event) {
-    const { value, name } = event.target;
-    var api = 'http://localhost:5000/api/'
-    switch (name) {
-      case "joint1":
-        setJoint1(value);
-        api += 'joint1'
-        break;
-      case "joint2":
-        setJoint2(value);
-        api += 'joint2'
-        break;
-      case "joint3":
-        setJoint3(value);
-        api += 'joint3'
-        break;
-      case "joint4":
-        setJoint4(value);
-        api += 'joint4'
-        break;
-      case "joint5":
-        setJoint5(value);
-        api += 'joint5'
-        break;
-      case "joint6":
-        setJoint6(value);
-        api += 'joint6'
-        break;
-      case "sleep":
-        api += 'sleep'
-        break;
-      case "wake":
-        api += 'wake'
-        break;
-      default:
-        break;
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const STREAM_WIDTH_RATIO = 0.7;
+const STREAM_HEIGHT_RATIO = 0.8;
+const RASPBERRY_PI_STREAM_ADDR = "http://192.168.8.115:5000/video_feed";
+
+function VideoStream({ detections }) {
+  const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
+  const canvasTimeout = useRef(null);
+  const windowSize = useRef([window.innerWidth, window.innerHeight]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    if (detections.length) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearTimeout(canvasTimeout.current);
+      canvasTimeout.current = setTimeout(() => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }, 6000);
+      drawCanvas(
+        context,
+        detections,
+        windowSize.current[0] * STREAM_WIDTH_RATIO,
+        windowSize.current[1] * STREAM_HEIGHT_RATIO
+      );
     }
-    fetch(api, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(value)
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+  }, [detections]);
+
+  function drawCanvas(context, detections, windowWidth, windowHeight) {
+    for (const detection of detections) {
+      console.log(detection);
+      context.beginPath();
+      let x = detection.x * windowWidth;
+      let y = detection.y * windowHeight;
+      let width = detection.width * windowWidth;
+      let height = detection.height * windowHeight;
+      context.rect(x, y, width, height);
+      context.strokeStyle = "red";
+      context.lineWidth = 2;
+      context.stroke();
+      context.font = "28px font-family: 'Orbitron', sans-serif;";
+      context.fillStyle = "red";
+      context.fillText(
+        detection.class.toUpperCase() +
+        ": " +
+        Math.round(parseFloat(detection.probability) * 100) +
+        "%",
+        x,
+        detection.y > 0.1 ? y - 10 : y + height + 30
+      );
+    }
   }
 
-  // define the style for the robot arm
-  const robotArmStyle = {
-    position: "relative",
-    width: "300px",
-    height: "300px",
-    border: "1px solid black",
-  };
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+        height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+      }}
+    >
+      <img
+        id="img"
+        style={{
+          position: "absolute",
+          borderRadius: "20px",
+          width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+          height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+        }}
+        src={RASPBERRY_PI_STREAM_ADDR}
+        alt="raspberry pi video stream"
+      ></img>
+      {/* TODO: check if the left and top are correct */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          width: windowSize.current[0] * STREAM_WIDTH_RATIO,
+          height: windowSize.current[1] * STREAM_HEIGHT_RATIO,
+        }}
+      ></canvas>
+    </div>
+  );
+}
 
-  // define the style for each segment of the robot arm
-  const segmentStyle = {
-    position: "absolute",
+function App() {
+  const windowSize = useRef([window.innerWidth, window.innerHeight]);
+  const [c1Count, setc1Count] = useState(0);
+  const [c2Count, setc2Count] = useState(0);
+  const [c3Count, setc3Count] = useState(0);
+  const [lastClassSeen, setLastClassSeen] = useState("none")
+  // const [newCount, setNewCount] = useState(0);
+  const [detections, setDetections] = useState([]);
+  document.body.style.overflow = "hidden";
+  useEffect(() => {
+    const socket = io("http://localhost:65534");
+
+    socket.on("detections", (detections) => {
+      for (var detection in detections) {
+        if (detections[detection].class === "scissors") {
+          if (lastClassSeen !== "scissors") {
+            setc1Count(c1Count + 1);
+            setLastClassSeen("scissors")
+          }
+        } else if (detections[detection].class === "wine glass") {
+          if (lastClassSeen !== "wine glass") {
+            setc2Count(c2Count + 1);
+            setLastClassSeen("wine glass")
+          }
+        } else if (detections[detection].class === "mouse") {
+          if (lastClassSeen !== "mouse") {
+            setc3Count(c3Count + 1);
+            setLastClassSeen("mouse")
+          }
+        }
+        // setNewCount(detections.length);
+        setDetections(detections);
+      }
+    }
+    );
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [c1Count, c2Count, c3Count]);
+
+  const analyticsNumberStyle = {
+    backgroundColor: "#99D98C",
+    fontFamily: "Orbitron",
+    borderRadius: "10px",
+    textAlign: "center",
     width: "60px",
-    height: "20px",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "grey",
+    padding: "5px",
+    marginTop: "10px",
   };
-
-  // define the style for each joint of the robot arm
-  const jointStyle = {
-    position: "absolute",
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: "black",
-  };
-
 
   return (
-    <div style={robotArmStyle}>
-      {/* <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint1}deg)` }}>
-        <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-        <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint2}deg)` }}>
-          <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-          <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint3}deg)` }}>
-            <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-            <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint4}deg)` }}>
-              <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-              <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint5}deg)` }}>
-                <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-                <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint6}deg)` }}>
-                  <div style={{ ...jointStyle, top: "50%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-                </div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        height: "1000px"
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#184E77",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            height: 0.1 * windowSize.current[1],
+            textAlign: "center",
+            fontFamily: "Orbitron",
+            fontSize: 65,
+            fontWeight: 900,
+            color: "#D9ED92",
+          }}
+        >
+          MechaSort
+        </div>
+        <img
+          src={mechasortLogo}
+          height="70px"
+          width="60px"
+          style={{ margin: "10px" }}
+          alt="MechaSort Logo"
+        />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          backgroundColor: "#D9ED92",
+          height: "100%",
+        }}
+      >
+        <div style={{ marginTop: "20px", marginLeft: "20px" }}>
+          <VideoStream detections={detections} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              marginTop: "20px",
+              marginLeft: "20px",
+              width: "85%",
+            }}
+          >
+            <RobotArm></RobotArm>
+          </div>
+          <div
+            style={{
+              backgroundColor: "#34A0A4",
+              width: "85%",
+              // height: "80%",
+              height: "250px",
+              borderRadius: "25px",
+              marginLeft: "20px",
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{ fontFamily: "Orbitron", fontWeight: 900, fontSize: 20, }}
+            >
+              Analytics{" "}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <div style={analyticsNumberStyle}>
+                <div style={{ fontSize: 18, fontWeight: 600 }}> {c1Count} </div>
+                <div style={{ fontSize: 10 }}>sharp objects</div>
               </div>
+              <div style={analyticsNumberStyle}>
+                <div style={{ fontSize: 18, fontWeight: 600 }}> {c2Count} </div>
+                <div style={{ fontSize: 10 }}>rotten items</div>
+              </div>
+              <div style={analyticsNumberStyle}>
+                <div style={{ fontSize: 18, fontWeight: 600 }}> {c3Count} </div>
+                <div style={{ fontSize: 10 }}>toxins</div>
+              </div>
+            </div>
+            <div style={{ width: "100%" }}>
+              <DisplayChart c1Data={c1Count} c2Data={c2Count} c3Data={c3Count} />
             </div>
           </div>
         </div>
-      </div> */}
-
-
-
-      {/* <div>
-        <label>Joint 1:</label>
-        <input type="range" min="-180" max="180" name="joint1" value={joint1} onChange={handleJointChange} />
       </div>
-      <div>
-        <label>Joint 2:</label>
-        <input type="range" min="-180" max="180" name="joint2" value={joint2} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Joint 3:</label>
-        <input type="range" min="-180" max="180" name="joint3" value={joint3} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Joint 4:</label>
-        <input type="range" min="-180" max="180" name="joint4" value={joint4} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Joint 5:</label>
-        <input type="range" min="-180" max="180" name="joint5" value={joint5} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Joint 6:</label>
-        <input type="range" min="-180" max="180" name="joint6" value={joint6} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Sleep:</label>
-        <input type="range" min="-180" max="180" name="sleep" value={joint6} onChange={handleJointChange} />
-      </div>
-      <div>
-        <label>Wake up:</label>
-        <input type="range" min="-180" max="180" name="wake" value={joint6} onChange={handleJointChange} />
-      </div> */}
-      <MyComponent />
-    </div >
-
-  )
+    </div>
+  );
 }
 
-export default RobotArm;
-// import React, { useState } from "react";
-
-// function RobotArm() {
-//   // State variables for joint angles
-//   const [joint1, setJoint1] = useState(0);
-//   const [joint2, setJoint2] = useState(0);
-//   const [joint3, setJoint3] = useState(0);
-//   const [joint4, setJoint4] = useState(0);
-//   const [joint5, setJoint5] = useState(0);
-//   const [joint6, setJoint6] = useState(0);
-
-//   // Function to handle joint angle changes
-//   const handleJointChange = (event) => {
-//     const value = parseInt(event.target.value);
-//     const name = event.target.name;
-//     switch (name) {
-//       case "joint1":
-//         setJoint1(value);
-//         break;
-//       case "joint2":
-//         setJoint2(value);
-//         break;
-//       case "joint3":
-//         setJoint3(value);
-//         break;
-//       case "joint4":
-//         setJoint4(value);
-//         break;
-//       case "joint5":
-//         setJoint5(value);
-//         break;
-//       case "joint6":
-//         setJoint6(value);
-//         break;
-//       default:
-//         break;
-//     }
-//   };
-
-//   // Style objects for segments and joints
-//   const baseStyle = {
-//     position: "absolute",
-//     width: "100px",
-//     height: "100px",
-//     borderRadius: "50%",
-//     backgroundColor: "#777",
-//     top: "50%",
-//     left: "50%",
-//     transform: "translate(-50%, -50%)",
-//     display: "flex",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     flexDirection: "column",
-//   };
-
-//   const segmentStyle = {
-//     position: "absolute",
-//     width: "50px",
-//     height: "200px",
-//     backgroundColor: "#aaa",
-//     top: "50%",
-//     left: "50%",
-//     transform: "translate(-50%, -50%)",
-//     transformOrigin: "top",
-//   };
-
-//   const jointStyle = {
-//     position: "absolute",
-//     width: "20px",
-//     height: "20px",
-//     borderRadius: "50%",
-//     backgroundColor: "#999",
-//   };
-
-//   // JSX for robot arm
-//   return (
-//     <div>
-//       <div style={baseStyle}>
-//         <div style={{ ...jointStyle }}></div>
-//         <div style={{ ...segmentStyle, transform: `rotate(${joint1}deg)` }}>
-//           <div style={{ ...jointStyle, top: "0%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-//           <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint2}deg)` }}>
-//             <div style={{ ...jointStyle, top: "0%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-//             <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint3}deg)` }}>
-//               <div style={{ ...jointStyle, top: "0%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-//               <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint4}deg)` }}>
-//                 <div style={{ ...jointStyle, top: "0%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-//                 <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint5}deg)` }}>
-//                   <div style={{ ...jointStyle, top: "0%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-//                   <div style={{ ...segmentStyle, transform: `translateY(-100%) rotate(${joint6}deg)` }}>
-//                     <div style={{ ...jointStyle, top: "0%", left: "0%", transform: "translate(-50%, -50%)" }}></div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//       <div>
-//         <label htmlFor="joint1">Joint 1:</label>
-//         <input
-//           type="range"
-//           name="joint1"
-//           value={joint1}
-//           min={-180}
-//           max={180}
-//           step={1}
-//           onChange={handleJointChange}
-//         />
-//       </div>
-//       <div>
-//         <label htmlFor="joint2">Joint 2:</label>
-//         <input
-//           type="range"
-//           name="joint2"
-//           value={joint2}
-//           min={-180}
-//           max={180}
-//           step={1}
-//           onChange={handleJointChange}
-//         />
-//       </div>
-//       <div>
-//         <label htmlFor="joint3">Joint 3:</label>
-//         <input
-//           type="range"
-//           name="joint3"
-//           value={joint3}
-//           min={-180}
-//           max={180}
-//           step={1}
-//           onChange={handleJointChange}
-//         />
-//       </div>
-//       <div>
-//         <label htmlFor="joint4">Joint 4:</label>
-//         <input
-//           type="range"
-//           name="joint4"
-//           value={joint4}
-//           min={-180}
-//           max={180}
-//           step={1}
-//           onChange={handleJointChange}
-//         />
-//       </div>
-//       <div>
-//         <label htmlFor="joint5">Joint 5:</label>
-//         <input
-//           type="range"
-//           name="joint5"
-//           value={joint5}
-//           min={-180}
-//           max={180}
-//           step={1}
-//           onChange={handleJointChange}
-//         />
-//       </div>
-//       <div>
-//         <label htmlFor="joint6">Joint 6:</label>
-//         <input
-//           type="range"
-//           name="joint6"
-//           value={joint6}
-//           min={-180}
-//           max={180}
-//           step={1}
-//           onChange={handleJointChange}
-//         />
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default RobotArm;
-
+export default App;

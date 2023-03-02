@@ -21,8 +21,8 @@ function jointApiCalls(angles) {
     });
 }
 
-function ArmModel({top, left}) {
-  const [impts, setImpts] = useState([top, top-offset, top-(offset * 2), top-(offset*3)]);
+function ArmModel({ top, left }) {
+  const [impts, setImpts] = useState([top, top - offset, top - (offset * 2), top - (offset * 3)]);
   const [impls, setImpls] = useState([left, left, left, left]);
   const [angles, setAngles] = useState([0, 0, 0]);
 
@@ -43,9 +43,9 @@ function ArmModel({top, left}) {
   }
 
   function handleMouseMove(e) {
-    const {clientX} = e;
+    const { clientX } = e;
     // console.log(clientX);
-    const direction = clientX > 1200;
+    const direction = clientX > 1600;
     // var newAngles = [...angles];
     if (curMouseIndex > 0) {
       // console.log("here", curMouseIndex, angles[curMouseIndex - 1], direction)
@@ -54,7 +54,7 @@ function ArmModel({top, left}) {
       setAngles(prevAngles => {
         anglesGlobal = prevAngles
         const newAngles = { ...prevAngles };
-        newAngles[curMouseIndex - 1] = prevAngles[curMouseIndex - 1] + 0.2 * direction  - 0.1;
+        newAngles[curMouseIndex - 1] = prevAngles[curMouseIndex - 1] + 0.2 * direction - 0.1;
         renderPositions(newAngles);
         return newAngles;
       });
@@ -62,9 +62,9 @@ function ArmModel({top, left}) {
     }
     // console.log(angle);
   }
-  
+
   const renderPositions = (angles) => {
-    var impts = [top, top-offset, top-(offset * 2), top-(offset*3)];
+    var impts = [top, top - offset, top - (offset * 2), top - (offset * 3)];
     var impls = [left, left, left, left];
     var angle = 0;
     for (var i = 0; i < 3; i++) {
@@ -75,7 +75,7 @@ function ArmModel({top, left}) {
     setImpts(impts);
     setImpls(impls);
   }
-  
+
   const jointMouseDown = (event) => {
     event.preventDefault();
   }
@@ -85,47 +85,47 @@ function ArmModel({top, left}) {
     <div>
       {impts.map((impt, index) => (
         <div>
-        {/* bars */}
-        <img
-          alt="bar"
-          key={"bar" + index}
-          src={require("./bar" + index + ".png")}
-          onMouseDown={(event) => handleMouseDown(event, index)}
-          style={{
-            position: 'absolute',
-            width: index === 0 ? "80px" : index === 1 ? "25px" : index === 2 ? "25px" : "20px",
-            height: index === 0 ? "30px" : index === 1 ? "40px" : index === 2 ? "50px" : "20px",
-            top: `${impt - (index === 2 ? 15 : 0)}px`,
-            left: `${impls[index] + (index === 1 || index === 2 || index === 3 ? 25 : 0)}px`,
-            transform: `rotate(${cummulativeAngles[index]}deg)`,
-            transformOrigin: "50% 95%",
-          }}
-        />
+          {/* bars */}
+          <img
+            alt="bar"
+            key={"bar" + index}
+            src={require("./bar" + index + ".png")}
+            onMouseDown={(event) => handleMouseDown(event, index)}
+            style={{
+              position: 'absolute',
+              width: index === 0 ? "80px" : index === 1 ? "25px" : index === 2 ? "25px" : "20px",
+              height: index === 0 ? "30px" : index === 1 ? "40px" : index === 2 ? "50px" : "20px",
+              top: `${impt - (index === 2 ? 15 : 0)}px`,
+              left: `${impls[index] + (index === 1 || index === 2 || index === 3 ? 25 : 0)}px`,
+              transform: `rotate(${cummulativeAngles[index]}deg)`,
+              transformOrigin: "50% 95%",
+            }}
+          />
         </div>
       ))}
       {impts.map((impt, index) => (
         <div>
-        {/* joints */}
-        <img
-          alt="joint"
-          key={"joint" + index}
-          src={require("./joint" + index + ".png")}
-          onMouseDown={(event) => jointMouseDown(event)}
-          style={{
-            position: 'absolute',
-            width: index === 3 ? "45px" : "25px",
-            height: index === 3 ? "45px" : "25px",
-            top: `${impts[index] - 20 - (index === 2 ? 15 : index === 3 ? 25 : 0)}px`,
-            left: `${(impls[index + (index === 3 ? 0 : 1)] + impls[index])/2 + 25 - (index === 3 ? 10 : 0)}px`,
-            transform: `rotate(${cummulativeAngles[index]}deg)`,
-            transformOrigin: "50% 95%",
-          }}
-        />
+          {/* joints */}
+          <img
+            alt="joint"
+            key={"joint" + index}
+            src={require("./joint" + index + ".png")}
+            onMouseDown={(event) => jointMouseDown(event)}
+            style={{
+              position: 'absolute',
+              width: index === 3 ? "45px" : "25px",
+              height: index === 3 ? "45px" : "25px",
+              top: `${impts[index] - 20 - (index === 2 ? 15 : index === 3 ? 25 : 0)}px`,
+              left: `${(impls[index + (index === 3 ? 0 : 1)] + impls[index]) / 2 + 25 - (index === 3 ? 10 : 0)}px`,
+              transform: `rotate(${cummulativeAngles[index]}deg)`,
+              transformOrigin: "50% 95%",
+            }}
+          />
         </div>
       ))}
 
-               {/* joints */}
-               
+      {/* joints */}
+
       {/* <form>
         <label htmlFor="top">Joint1:</label>
         <input type="text" name="joint1" value={angles[0]} onChange={handleAngleChange} />
